@@ -359,6 +359,148 @@ public class excel {
         return res;
     }
     
+    public void iban(){
+
+        XSSFSheet hoja = excel.getSheetAt(0);
+        Iterator<Row> iteradorFilas = hoja.iterator();
+
+        Row fila;
+
+        for(int i = 1; i < hoja.getLastRowNum(); i++){
+
+            fila = hoja.getRow(i);
+
+            Cell celdaCCC = fila.getCell(9); //selecciona la casilla correspondiente al CCC
+            Cell celdaPais = fila.getCell(10); //selecciona la casilla correspondiente al pais
+            Cell celdaIban = fila.getCell(11); //selecciona la casilla correspondiente a la columna L en la que se añadirá el IBAN
+
+            if(celdaCCC != null && celdaCCC.getCellType() != CellType.BLANK && StringUtils.isNotBlank(celdaCCC.toString()) && !filaVacia(fila)){
+                if(celdaPais != null && celdaPais.getCellType() != CellType.BLANK && StringUtils.isNoneBlank(celdaPais.toString()) && !filaVacia(fila)){
+
+                    String iban = calculaIban(celdaCCC.getStringCellValue(), celdaPais.getStringCellValue());
+
+                    //celdaIban.setCellValue(iban);
+
+                }
+            }
+        } 
+    }
+
+    public String calculaIban(String ccc, String pais){
+
+        String codigo = pais.concat("00").concat(ccc);
+
+        codigo = ccc.concat(pais).concat("00");
+
+        String[] letras = pais.split("");
+
+        String codigoletras = transformarNumero(letras[0]).concat(transformarNumero(letras[1]));
+
+        codigo = ccc.concat(codigoletras).concat("00");
+
+        java.math.BigInteger codigoCompleto = new java.math.BigInteger(codigo);
+        java.math.BigInteger num = new java.math.BigInteger("97");
+
+        java.math.BigInteger resto = codigoCompleto.mod(num);
+
+        java.math.BigInteger num1 = new java.math.BigInteger("98");
+        java.math.BigInteger diferencia = num1.subtract(resto);
+
+        String digitos = diferencia.toString();
+
+        String iban = pais.concat(digitos).concat(ccc);
+        System.out.println("IBAN: " + iban);
+
+        return iban;
+    }
+
+    public String transformarNumero(String letra){
+
+        String num = null;
+
+        switch(letra){
+                case "A":
+                    num = "10";
+                    break;
+                case "B":
+                    num = "11";
+                    break;
+                case "C":
+                    num = "12";
+                    break;
+                case "D":
+                    num = "13";
+                    break;
+                case "E":
+                    num = "14";
+                    break;
+                case "F":
+                    num = "15";
+                    break;
+                case "G":
+                    num = "16";
+                    break;
+                case "H":
+                    num = "17";
+                    break;
+                case "I":
+                    num = "18";
+                    break;
+                case "J":
+                    num = "19";
+                    break;
+                case "K":
+                    num = "20";
+                    break;
+                case "L":
+                    num = "21";
+                    break;
+                case "M":
+                    num = "22";
+                    break;
+                case "N":
+                    num = "23";
+                    break;
+                case "O":
+                    num = "24";
+                    break;
+                case "P":
+                    num = "25";
+                    break;
+                case "Q":
+                    num = "26";
+                    break;
+                case "R":
+                    num = "27";
+                    break;
+                case "S":
+                    num = "28";
+                    break;
+                case "T":
+                    num = "29";
+                    break;
+                case "U":
+                    num = "30";
+                    break;
+                case "V":
+                    num = "31";
+                    break;
+                case "W":
+                    num = "32";
+                    break;
+                case "X":
+                    num = "33";
+                    break;
+                case "Y":
+                    num = "34";
+                    break;
+                case "Z":
+                    num = "35";
+                    break;
+        }    
+        return num;
+    }
+    
     public void close(){
         
         try{

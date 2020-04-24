@@ -249,4 +249,232 @@ public class xml {
             tfe.printStackTrace();
         }
     }
+    
+    public void creaFicheroErroresCCC() {
+
+        try {
+            ArrayList<ArrayList<String>> cuentas = new ArrayList();
+
+            hoja = excel.getSheetAt(0);
+
+            ArrayList<ArrayList<String>> cccs = new ArrayList();
+
+            //Busca las celdas en blanco 
+            for(int i = 1; i < hoja.getLastRowNum(); i++){
+
+                Row fila = hoja.getRow(i);
+                Cell celda = fila.getCell(9); // selecciona la casilla correspondiente al ccc
+
+                if((celda == null || celda.getCellType() == CellType.BLANK || StringUtils.isBlank(celda.toString())) && !exc.filaVacia(fila)){
+
+                    cuentas.add(new ArrayList());
+
+                    cuentas.get(cuentas.size()-1).add(Integer.toString(i+1));
+
+                    Cell aux = fila.getCell(4); //Nombre
+
+                    if(aux != null){
+                        cuentas.get(cuentas.size()-1).add(aux.getStringCellValue());
+                    }
+                    else{
+                        cuentas.get(cuentas.size()-1).add("");
+                    }
+
+                    aux = fila.getCell(5); //Apellido 1
+
+                    if(aux != null){
+                        cuentas.get(cuentas.size()-1).add(aux.getStringCellValue());
+                    }
+                    else{
+                        cuentas.get(cuentas.size()-1).add("");
+                    }
+
+                    aux = fila.getCell(6); //Apellido 2
+
+                    if(aux != null){
+                        cuentas.get(cuentas.size()-1).add(aux.getStringCellValue());
+                    }
+                    else{
+                        cuentas.get(cuentas.size()-1).add("");
+                    }
+
+                    aux = fila.getCell(1); //Empresa
+
+                    if(aux != null){
+                        cuentas.get(cuentas.size()-1).add(aux.getStringCellValue());
+                    }
+                    else{
+                        cuentas.get(cuentas.size()-1).add("");
+                    }
+
+                    aux = fila.getCell(9); //CCC
+
+                    if(aux != null){
+                        cuentas.get(cuentas.size()-1).add(aux.getStringCellValue());
+                    }
+                    else{
+                        cuentas.get(cuentas.size()-1).add("");
+                    }
+
+                    aux = fila.getCell(11); //IBAN
+
+                    if(aux != null){
+                        cuentas.get(cuentas.size()-1).add(aux.getStringCellValue());
+                    }
+                    else{
+                        cuentas.get(cuentas.size()-1).add("");
+                    }
+
+                } else if(!exc.filaVacia(fila)){
+
+                    cccs.add(new ArrayList());
+                    cccs.get(cccs.size()-1).add(celda.getStringCellValue());
+                    cccs.get(cccs.size()-1).add(Integer.toString(i+1));
+                    cccs.get(cccs.size()-1).add("");
+                }
+            }
+
+            //Busca duplicados
+            for(int i = 0; i < cccs.size()-1; i++) {
+                for(int j = 0; j < cccs.size()-1; j++){
+
+                    if(i != j && cccs.get(i).get(0).equals(cccs.get(j).get(0)) && cccs.get(i).get(2).equals("duplicado") && cccs.get(j).get(2).equals("")){
+
+                        cccs.get(j).set(2, "duplicado");
+
+                    }else if(i != j && cccs.get(i).get(0).equals(cccs.get(j).get(0)) && cccs.get(i).get(2).equals("") && cccs.get(j).get(2).equals("")){
+
+                        Row fila = hoja.getRow(Integer.parseInt(cccs.get(i).get(1))-1);
+
+                        cuentas.add(new ArrayList());
+
+                        cuentas.get(cuentas.size()-1).add(cccs.get(i).get(1));
+
+                        Cell aux = fila.getCell(4); //Nombre
+
+                        if(aux != null){
+                            cuentas.get(cuentas.size()-1).add(aux.getStringCellValue());
+                        }
+                        else{
+                            cuentas.get(cuentas.size()-1).add("");
+                        }
+
+                        aux = fila.getCell(5); //Apellido 1
+
+                        if(aux != null){
+                            cuentas.get(cuentas.size()-1).add(aux.getStringCellValue());
+                        }
+                        else{
+                            cuentas.get(cuentas.size()-1).add("");
+                        }
+
+                        aux = fila.getCell(6); //Apellido 2
+
+                        if(aux != null){
+                            cuentas.get(cuentas.size()-1).add(aux.getStringCellValue());
+                        }
+                        else{
+                            cuentas.get(cuentas.size()-1).add("");
+                        }
+
+                        aux = fila.getCell(1); //Empresa
+
+                        if(aux != null){
+                            cuentas.get(cuentas.size()-1).add(aux.getStringCellValue());
+                        }
+                        else{
+                            cuentas.get(cuentas.size()-1).add("");
+                        }
+
+                        aux = fila.getCell(9); //CCC
+
+                        if(aux != null){
+                            cuentas.get(cuentas.size()-1).add(aux.getStringCellValue());
+                        }
+                        else{
+                            cuentas.get(cuentas.size()-1).add("");
+                        }
+
+                        aux = fila.getCell(11); //IBAN
+
+                        if(aux != null){
+                            cuentas.get(cuentas.size()-1).add(aux.getStringCellValue());
+                        }
+                        else{
+                            cuentas.get(cuentas.size()-1).add("");
+                        }
+
+                        cccs.get(i).set(2, "duplicado");
+                        cccs.get(j).set(2, "duplicado");
+                    }
+                }
+            }
+
+            //Crea el archivo xml
+
+            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+            Document documento = docBuilder.newDocument();
+
+            //Elemento raíz
+            Element raiz = documento.createElement("cuentas");
+            documento.appendChild(raiz);
+
+            // crea los elementos trabajadores
+            for(ArrayList<String> t: cuentas){
+
+                Element cuenta = documento.createElement("cuenta");
+                raiz.appendChild(cuenta);
+
+                Attr id = documento.createAttribute("id");
+                id.setValue(t.get(0));
+                cuenta.setAttributeNode(id);
+
+                Element nombre = documento.createElement("nombre");
+                nombre.appendChild(documento.createTextNode(t.get(1)));
+                cuenta.appendChild(nombre);
+
+                String apellido = "";
+                if(!t.get(2).equals("") && t.get(3).equals("")){
+                    apellido = t.get(2);
+                }
+                else if(t.get(2).equals("") && !t.get(3).equals("")){
+                    apellido = t.get(3);
+                }
+                else if(!t.get(2).equals("") && !t.get(3).equals("")){
+                    apellido = t.get(2) + " " + t.get(3);
+                }
+
+                Element apellidos = documento.createElement("apellidos");
+                apellidos.appendChild(documento.createTextNode(apellido));
+                cuenta.appendChild(apellidos);
+
+                Element empresa = documento.createElement("empresa");
+                empresa.appendChild(documento.createTextNode(t.get(4)));
+                cuenta.appendChild(empresa);
+
+                Element ccc = documento.createElement("ccc");
+                ccc.appendChild(documento.createTextNode(t.get(9)));
+                cuenta.appendChild(ccc);
+
+                Element iban = documento.createElement("IBAN");
+                iban.appendChild(documento.createTextNode(t.get(11)));
+                cuenta.appendChild(iban);
+            }
+
+            //Se escribe el contenido del xml en un archivo
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(documento);
+            StreamResult result = new StreamResult(new File("./src/resources/ErroresCCC.xml"));    
+            transformer.transform(source, result);
+
+        } catch (ParserConfigurationException pce) {
+            pce.printStackTrace();
+
+        } catch (TransformerException tfe) {
+            tfe.printStackTrace();
+        }
+    }
+    
 }
