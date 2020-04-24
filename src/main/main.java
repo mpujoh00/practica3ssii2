@@ -33,7 +33,7 @@ public class main {
         exc.corrigeDigitosDeControl();
         exc.iban();*/
         
-        exc.hojaCategorias();
+        exc.hojaTrienios();
         
         exc.close();
     
