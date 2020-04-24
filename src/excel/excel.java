@@ -8,6 +8,7 @@ package excel;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import org.apache.commons.lang3.StringUtils;
@@ -16,6 +17,8 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import clases.Categorias;
 
 /**
  *
@@ -196,25 +199,36 @@ public class excel {
     // HASHMAP
     
     
-    public void hoja2(){
+    public ArrayList<Categorias> hojaCategorias(){
         
         XSSFSheet hoja = excel.getSheetAt(1);
-        Iterator<Row> iteradorFilas = hoja.iterator();
         
         Row fila;
         
         //definir un HashMap
-        HashMap global = new HashMap();
+        //HashMap<String, Float> categorias = new HashMap<String, Float>();
+        ArrayList<Categorias> categorias = new ArrayList<>(hoja.getLastRowNum()-1);
         
-        
-        for(int i = 0; i < hoja.getLastRowNum(); i++){
+        for(int i = 1; i < hoja.getLastRowNum(); i++){
             
             fila = hoja.getRow(i);
+            
+            Categorias cat = new Categorias(i, fila.getCell(0).toString(), Double.parseDouble(fila.getCell(1).toString()),
+            		Double.parseDouble(fila.getCell(2).toString()));
+            
+            categorias.add(cat);
         
             //insertar valores "key"-"value" al HashMap
-            global.put(fila.getCell(0), fila.getCell(1));
-            global.put(fila.getCell(0), fila.getCell(2));
+            //categorias.put(fila.getCell(0).toString(), Float.parseFloat(fila.getCell(1).toString()));
+            //categorias.put(fila.getCell(0).toString(), Float.parseFloat(fila.getCell(2).toString()));
         } 
+        
+        for(Categorias cat: categorias) {
+        	
+        	System.out.println(cat.toString());
+        }
+        
+        return categorias;
     }
     
     public void hoja3(){

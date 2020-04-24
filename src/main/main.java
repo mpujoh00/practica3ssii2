@@ -29,14 +29,17 @@ public class main {
     public static void main(String[] args) {
         
         excel exc = new excel();
-        exc.corrigeNifs();
+        /*exc.corrigeNifs();
         exc.corrigeDigitosDeControl();
-        exc.iban();
+        exc.iban();*/
+        
+        exc.hojaCategorias();
+        
         exc.close();
     
         xml xml = new xml();
         xml.creaFicheroErrores();
-        xml.creaFicheroErroresCCC();
+        //xml.creaFicheroErroresCCC();
         
     }
     
