@@ -198,8 +198,7 @@ public class excel {
     
     // HASHMAP
     
-    
-    public ArrayList<Categorias> hojaCategorias(){
+     public ArrayList<Categorias> hojaCategorias(){ //hoja 2
         
         XSSFSheet hoja = excel.getSheetAt(1);
         
@@ -231,7 +230,7 @@ public class excel {
         return categorias;
     }
     
-    public HashMap<Double, Double> hojaRetenciones(){
+    public HashMap<Double, Double> hojaRetenciones(){ //hoja 3
         
         XSSFSheet hoja = excel.getSheetAt(2);
         
@@ -257,7 +256,7 @@ public class excel {
         
     }
     
-    public HashMap<String, Double> hojaValores(){
+    public HashMap<String, Double> hojaValores(){ //hoja 4
         
         XSSFSheet hoja = excel.getSheetAt(3);
         
@@ -282,7 +281,7 @@ public class excel {
         return valores;
     }
     
-    public HashMap<Double, Double> hojaTrienios(){
+    public HashMap<Double, Double> hojaTrienios(){ //hoja 5
         
         XSSFSheet hoja = excel.getSheetAt(4);
         
@@ -321,14 +320,14 @@ public class excel {
             fila = hoja.getRow(i);
             
             Cell celda = fila.getCell(9); //selecciona la casilla correspondiente al CCC
-            
+
             if(celda != null && celda.getCellType() != CellType.BLANK && StringUtils.isNotBlank(celda.toString()) && !filaVacia(fila)){
                 
                 String res = validaDigitosDeControl(celda.getStringCellValue());
                 
                 if(res != "inc" && res != null){ //modifica los dígitos de control erróneos
-                    celda.setCellValue(res);
-
+                    
+                    //celda.setCellValue(res);
                 }
             }
         }
@@ -336,7 +335,6 @@ public class excel {
     
     private static String validaDigitosDeControl(String ccc){
         
-        //ccc = "11112223774444444444";
         String res = null;
         String primerDigito = null;
         String segundoDigito = null;
@@ -389,65 +387,71 @@ public class excel {
         return res;
     }
     
+    //IBAN
+    
     public void iban(){
-
+        
         XSSFSheet hoja = excel.getSheetAt(0);
         Iterator<Row> iteradorFilas = hoja.iterator();
-
+        
         Row fila;
-
+        
         for(int i = 1; i < hoja.getLastRowNum(); i++){
-
+            
             fila = hoja.getRow(i);
-
+            
             Cell celdaCCC = fila.getCell(9); //selecciona la casilla correspondiente al CCC
             Cell celdaPais = fila.getCell(10); //selecciona la casilla correspondiente al pais
             Cell celdaIban = fila.getCell(11); //selecciona la casilla correspondiente a la columna L en la que se añadirá el IBAN
-
+            
             if(celdaCCC != null && celdaCCC.getCellType() != CellType.BLANK && StringUtils.isNotBlank(celdaCCC.toString()) && !filaVacia(fila)){
                 if(celdaPais != null && celdaPais.getCellType() != CellType.BLANK && StringUtils.isNoneBlank(celdaPais.toString()) && !filaVacia(fila)){
-
+                    
                     String iban = calculaIban(celdaCCC.getStringCellValue(), celdaPais.getStringCellValue());
 
                     //celdaIban.setCellValue(iban);
-
+                    
                 }
             }
         } 
     }
-
+    
     public String calculaIban(String ccc, String pais){
 
         String codigo = pais.concat("00").concat(ccc);
-
+        
         codigo = ccc.concat(pais).concat("00");
-
+        
         String[] letras = pais.split("");
-
+        
         String codigoletras = transformarNumero(letras[0]).concat(transformarNumero(letras[1]));
-
+        
         codigo = ccc.concat(codigoletras).concat("00");
-
+                
         java.math.BigInteger codigoCompleto = new java.math.BigInteger(codigo);
         java.math.BigInteger num = new java.math.BigInteger("97");
-
+        
         java.math.BigInteger resto = codigoCompleto.mod(num);
-
+                
         java.math.BigInteger num1 = new java.math.BigInteger("98");
         java.math.BigInteger diferencia = num1.subtract(resto);
-
+        
         String digitos = diferencia.toString();
-
+        
+        if(digitos.length() != 2){
+            digitos = "0".concat(digitos);
+        }
+        
         String iban = pais.concat(digitos).concat(ccc);
         System.out.println("IBAN: " + iban);
-
+        
         return iban;
     }
-
+    
     public String transformarNumero(String letra){
-
+        
         String num = null;
-
+        
         switch(letra){
                 case "A":
                     num = "10";
@@ -528,6 +532,117 @@ public class excel {
                     num = "35";
                     break;
         }    
+        return num;
+    }
+    
+    //DIRECCIONES DE CORREO ELECTRÓNICO
+    
+    public void email(){
+        
+        XSSFSheet hoja = excel.getSheetAt(0);
+        Iterator<Row> iteradorFilas = hoja.iterator();
+        
+        Row fila;
+        
+        ArrayList<String> usuarios = new ArrayList();
+        
+        for(int i = 1; i < hoja.getLastRowNum(); i++){
+            
+            fila = hoja.getRow(i);
+            
+            Cell celdaA1 = fila.getCell(5); //selecciona la casilla correspondiente al apellido 1
+            Cell celdaA2 = fila.getCell(6); //selecciona la casilla correspondiente al apellido 2
+            Cell celdaN = fila.getCell(4); //selecciona la casilla correspondiente al nombre
+            Cell celdaE = fila.getCell(1); //selecciona la casilla correspondiente al nombre de la empresa
+            Cell celdaEmail = fila.getCell(8); //selecciona la casilla correspondiente al correo electrónico
+                        
+            if(celdaA1 != null && celdaA1.getCellType() != CellType.BLANK && StringUtils.isNotBlank(celdaA1.toString()) && !filaVacia(fila)){
+                if(celdaN != null && celdaN.getCellType() != CellType.BLANK && StringUtils.isNotBlank(celdaN.toString()) && !filaVacia(fila)){
+                    if(celdaE != null && celdaE.getCellType() != CellType.BLANK && StringUtils.isNotBlank(celdaE.toString()) && !filaVacia(fila)){
+                        if(celdaA2 != null && celdaA2.getCellType() != CellType.BLANK && StringUtils.isNotBlank(celdaA2.toString()) && !filaVacia(fila)){
+                            
+                            String email = generaEmail(celdaA1.getStringCellValue(), celdaA2.getStringCellValue(), celdaN.getStringCellValue(), celdaE.getStringCellValue(),usuarios);
+                            
+                            //celdaEmail.setCellValue(email);
+                            
+                        }
+                        else{
+                            String email = generaEmail(celdaA1.getStringCellValue(),celdaN.getStringCellValue(),celdaE.getStringCellValue(),usuarios);
+                            
+                            //celdaEmail.setCellValue(email);
+                        }
+                    }
+                }  
+            }
+        }
+    }
+    
+    public String generaEmail(String apellido1, String apellido2, String nombre, String empresa, ArrayList<String> usuarios){
+        
+        String[] surname1 = apellido1.split("");
+        String[] name = nombre.split("");
+        
+        String usuario = null;
+        
+        if(apellido2 != null){   
+            
+            String[] surname2 = apellido2.split("");
+            
+            usuario = surname1[0].concat(surname2[0]).concat(name[0]);
+        }
+        else{
+            
+            usuario = surname1[0].concat(name[0]);
+        }
+                
+        String num = repeticion(usuarios, usuario);
+        
+        usuarios.add(usuario);
+        
+        String email = usuario.concat(num).concat("@").concat(empresa).concat(".es");
+        System.out.println("email: " + email);
+        
+        return email;
+    }
+    
+    public String generaEmail(String apellido1, String nombre, String empresa, ArrayList<String> usuarios){
+        
+        String[] surname = apellido1.split("");
+        String[] name = nombre.split("");
+        
+        String usuario = null;
+        
+        usuario = surname[0].concat(name[0]);
+                
+        String num = repeticion(usuarios, usuario);
+        
+        usuarios.add(usuario);
+        
+        String email = usuario.concat(num).concat("@").concat(empresa).concat(".es");
+        System.out.println("email: " + email);
+        
+        return null;
+    }
+    
+    public String repeticion(ArrayList<String> usuarios, String usuario){
+        
+        int contador = 0;
+        
+        for(int i = 0; i < usuarios.size(); i++){
+            
+            if(usuario.equals(usuarios.get(i))){
+                
+                contador++;
+            }
+        }
+        
+        String num = Integer.toString(contador);
+        
+        if(contador < 10){
+            
+            num = "0".concat(num);  
+        }
+        
         return num;
     }
     
