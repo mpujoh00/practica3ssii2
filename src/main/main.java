@@ -5,16 +5,8 @@
  */
 package main;
 
-import DAO.CategoriasDAO;
-import DAO.TrabajadorDAO;
-import clases.Categorias;
-import clases.Empresas;
-import java.util.Scanner;
-import clases.Trabajadorbbdd;
 import excel.excel;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 import xml.xml;
 
 /**
@@ -30,14 +22,14 @@ public class main {
         
         excel exc = new excel();
         exc.corrigeNifs();
-        exc.corrigeDigitosDeControl();
+        ArrayList<ArrayList<String>> cuentasErrores = exc.corrigeDigitosDeControl();
         exc.iban();
         exc.email();
         exc.close();
     
         xml xml = new xml();
         xml.creaFicheroErrores();
-        xml.creaFicheroErroresCCC();
+        xml.creaFicheroErroresCCC(cuentasErrores);
         
     }
     

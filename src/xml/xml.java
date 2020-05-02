@@ -40,19 +40,18 @@ public class xml {
     public xml() {
         
         exc = new excel();
-        excel = exc.getExcel();
-        
+        excel = exc.getExcel();        
     }
     
     public void creaFicheroErrores() {
         
         try {
-            ArrayList<ArrayList<String>> trabajadores = new ArrayList(); // un arraylist para cada trabajador
+            ArrayList<ArrayList<String>> trabajadores = new ArrayList<ArrayList<String>>(); // un arraylist para cada trabajador
         
             // coge la hoja de trabajadores
             hoja = excel.getSheetAt(0);
             
-            ArrayList<ArrayList<String>> nifs = new ArrayList(); // mejor que un string (no sabemos la longitud)
+            ArrayList<ArrayList<String>> nifs = new ArrayList<ArrayList<String>>(); // mejor que un string (no sabemos la longitud)
             
             //Busca las celdas en blanco 
             for(int i = 1; i < hoja.getLastRowNum(); i++){ // empieza en la 2a fila
@@ -62,7 +61,7 @@ public class xml {
                                 
                 if((celda == null || celda.getCellType() == CellType.BLANK || StringUtils.isBlank(celda.toString())) && !exc.filaVacia(fila)){
      
-                    trabajadores.add(new ArrayList());
+                    trabajadores.add(new ArrayList<String>());
                     
                     trabajadores.get(trabajadores.size()-1).add(Integer.toString(i+1));
                     
@@ -113,7 +112,7 @@ public class xml {
                     
                 } else if(!exc.filaVacia(fila)){
                     
-                    nifs.add(new ArrayList());
+                    nifs.add(new ArrayList<String>());
                     nifs.get(nifs.size()-1).add(celda.getStringCellValue());
                     nifs.get(nifs.size()-1).add(Integer.toString(i+1));
                     nifs.get(nifs.size()-1).add("");
@@ -132,7 +131,7 @@ public class xml {
                                                 
                         Row fila = hoja.getRow(Integer.parseInt(nifs.get(i).get(1))-1);
                         
-                        trabajadores.add(new ArrayList());
+                        trabajadores.add(new ArrayList<String>());
 
                         trabajadores.get(trabajadores.size()-1).add(nifs.get(i).get(1));
 
@@ -250,168 +249,12 @@ public class xml {
         }
     } 
     
-    public void creaFicheroErroresCCC() {
+    public void creaFicheroErroresCCC(ArrayList<ArrayList<String>> cuentas) {
         
-        try {
-            ArrayList<ArrayList<String>> cuentas = new ArrayList();
-        
-            hoja = excel.getSheetAt(0);
+        try {            
+            hoja = excel.getSheetAt(0);     
             
-            ArrayList<ArrayList<String>> cccs = new ArrayList();
-            
-            //Busca las celdas en blanco 
-            for(int i = 1; i < hoja.getLastRowNum(); i++){
-                
-                Row fila = hoja.getRow(i);
-                Cell celda = fila.getCell(9); //Selecciona la casilla correspondiente al CCC
-                                
-                if((celda == null || celda.getCellType() == CellType.BLANK || StringUtils.isBlank(celda.toString())) && !exc.filaVacia(fila)){
-     
-                    cuentas.add(new ArrayList());
-                    
-                    cuentas.get(cuentas.size()-1).add(Integer.toString(i+1));
-                    
-                    Cell aux = fila.getCell(4); //Nombre
-                    
-                    if(aux != null){
-                        cuentas.get(cuentas.size()-1).add(aux.getStringCellValue());
-                    }
-                    else{
-                        cuentas.get(cuentas.size()-1).add("");
-                    }
-                    
-                    aux = fila.getCell(5); //Apellido 1
-                    
-                    if(aux != null){
-                        cuentas.get(cuentas.size()-1).add(aux.getStringCellValue());
-                    }
-                    else{
-                        cuentas.get(cuentas.size()-1).add("");
-                    }
-                    
-                    aux = fila.getCell(6); //Apellido 2
-                    
-                    if(aux != null){
-                        cuentas.get(cuentas.size()-1).add(aux.getStringCellValue());
-                    }
-                    else{
-                        cuentas.get(cuentas.size()-1).add("");
-                    }
-                    
-                    aux = fila.getCell(1); //Empresa
-                    
-                    if(aux != null){
-                        cuentas.get(cuentas.size()-1).add(aux.getStringCellValue());
-                    }
-                    else{
-                        cuentas.get(cuentas.size()-1).add("");
-                    }
-                    
-                    aux = fila.getCell(9); //Código de cuenta
-                    
-                    if(aux != null){
-                        cuentas.get(cuentas.size()-1).add(aux.getStringCellValue());
-                    }
-                    else{
-                        cuentas.get(cuentas.size()-1).add("");
-                    }
-                    
-                    aux = fila.getCell(11); //IBAN
-                    
-                    if(aux != null){
-                        cuentas.get(cuentas.size()-1).add(aux.getStringCellValue());
-                    }
-                    else{
-                        cuentas.get(cuentas.size()-1).add("");
-                    }
-                    
-                } else if(!exc.filaVacia(fila)){
-                    
-                    cccs.add(new ArrayList());
-                    cccs.get(cccs.size()-1).add(celda.getStringCellValue());
-                    cccs.get(cccs.size()-1).add(Integer.toString(i+1));
-                    cccs.get(cccs.size()-1).add("");
-                }
-            }
-            
-            //Busca duplicados
-            for(int i = 0; i < cccs.size()-1; i++) {
-                for(int j = 0; j < cccs.size()-1; j++){
-                    
-                    if(i != j && cccs.get(i).get(0).equals(cccs.get(j).get(0)) && cccs.get(i).get(2).equals("duplicado") && cccs.get(j).get(2).equals("")){
-                        
-                        cccs.get(j).set(2, "duplicado");
-                        
-                    }else if(i != j && cccs.get(i).get(0).equals(cccs.get(j).get(0)) && cccs.get(i).get(2).equals("") && cccs.get(j).get(2).equals("")){
-                                                
-                        Row fila = hoja.getRow(Integer.parseInt(cccs.get(i).get(1))-1);
-                        
-                        cuentas.add(new ArrayList());
-
-                        cuentas.get(cuentas.size()-1).add(cccs.get(i).get(1));
-
-                        Cell aux = fila.getCell(4); //Nombre
-
-                        if(aux != null){
-                            cuentas.get(cuentas.size()-1).add(aux.getStringCellValue());
-                        }
-                        else{
-                            cuentas.get(cuentas.size()-1).add("");
-                        }
-
-                        aux = fila.getCell(5); //Apellido 1
-
-                        if(aux != null){
-                            cuentas.get(cuentas.size()-1).add(aux.getStringCellValue());
-                        }
-                        else{
-                            cuentas.get(cuentas.size()-1).add("");
-                        }
-
-                        aux = fila.getCell(6); //Apellido 2
-
-                        if(aux != null){
-                            cuentas.get(cuentas.size()-1).add(aux.getStringCellValue());
-                        }
-                        else{
-                            cuentas.get(cuentas.size()-1).add("");
-                        }
-
-                        aux = fila.getCell(1); //Empresa
-
-                        if(aux != null){
-                            cuentas.get(cuentas.size()-1).add(aux.getStringCellValue());
-                        }
-                        else{
-                            cuentas.get(cuentas.size()-1).add("");
-                        }
-
-                        aux = fila.getCell(9); //Código de cuenta
-
-                        if(aux != null){
-                            cuentas.get(cuentas.size()-1).add(aux.getStringCellValue());
-                        }
-                        else{
-                            cuentas.get(cuentas.size()-1).add("");
-                        }
-                        
-                        aux = fila.getCell(11); //IBAN
-
-                        if(aux != null){
-                            cuentas.get(cuentas.size()-1).add(aux.getStringCellValue());
-                        }
-                        else{
-                            cuentas.get(cuentas.size()-1).add("");
-                        }
-                        
-                        cccs.get(i).set(2, "duplicado");
-                        cccs.get(j).set(2, "duplicado");
-                    }
-                }
-            }            
-            
-            //Crea el archivo xml
-            
+            //Crea el archivo xml            
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
             Document documento = docBuilder.newDocument();
@@ -419,30 +262,35 @@ public class xml {
             //Elemento raíz
             Element raiz = documento.createElement("cuentas");
             documento.appendChild(raiz);
-            
-            // crea los elementos cuentas
-            for(ArrayList<String> t: cuentas){
-                
-                Element trabajador = documento.createElement("cuenta");
+                        
+            // elementos cuentas
+            for(ArrayList<String> cuenta: cuentas){
+            	
+            	Element trabajador = documento.createElement("cuenta");
                 raiz.appendChild(trabajador);
-
+                               
                 Attr id = documento.createAttribute("id");
-                id.setValue(t.get(0));
+                id.setValue(Integer.toString(Integer.parseInt(cuenta.get(0))+1));
                 trabajador.setAttributeNode(id);
-
+                
+                Row fila = hoja.getRow(Integer.parseInt(cuenta.get(0)));
+                
                 Element nombre = documento.createElement("nombre");
-                nombre.appendChild(documento.createTextNode(t.get(1)));
+                nombre.appendChild(documento.createTextNode(fila.getCell(4).getStringCellValue()));
                 trabajador.appendChild(nombre);
                 
                 String apell = "";
-                if(!t.get(2).equals("") && t.get(3).equals("")){
-                    apell = t.get(2);
+                String ap1 = fila.getCell(5).getStringCellValue();
+                String ap2 = fila.getCell(5).getStringCellValue();
+                
+                if(ap1 != null && ap2 == null){
+                    apell = ap1;
                 }
-                else if(t.get(2).equals("") && !t.get(3).equals("")){
-                    apell = t.get(3);
+                else if(ap1 == null && ap2 != null){
+                    apell = ap2;
                 }
-                else if(!t.get(2).equals("") && !t.get(3).equals("")){
-                    apell = t.get(2) + " " + t.get(3);
+                else if(ap1 != null && ap2 != null){
+                    apell = ap1 + " " + ap2;
                 }
                 
                 Element apellidos = documento.createElement("apellidos");
@@ -450,16 +298,17 @@ public class xml {
                 trabajador.appendChild(apellidos);
                 
                 Element empresa = documento.createElement("empresa");
-                empresa.appendChild(documento.createTextNode(t.get(4)));
+                empresa.appendChild(documento.createTextNode(fila.getCell(1).getStringCellValue()));
                 trabajador.appendChild(empresa);
                 
-                Element ccc = documento.createElement("ccc");
-                empresa.appendChild(documento.createTextNode(t.get(5)));
+                Element ccc = documento.createElement("cccErroneo");
+                ccc.appendChild(documento.createTextNode(cuenta.get(1)));
                 trabajador.appendChild(ccc);
                 
                 Element iban = documento.createElement("iban");
-                iban.appendChild(documento.createTextNode(t.get(6)));
+                iban.appendChild(documento.createTextNode(fila.getCell(11).getStringCellValue()));
                 trabajador.appendChild(iban);
+                
             }
             
             //Se escribe el contenido del xml en un archivo

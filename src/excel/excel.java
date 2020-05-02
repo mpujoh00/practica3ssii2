@@ -10,7 +10,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -44,12 +43,11 @@ public class excel {
     
     public void corrigeNifs(){
         
-        XSSFSheet hoja = excel.getSheetAt(0);        
-        Iterator<Row> iteradorFilas = hoja.iterator();
+        XSSFSheet hoja = excel.getSheetAt(0);
         
         Row fila;
                 
-        for(int i = 1; i < hoja.getLastRowNum(); i++){
+        for(int i = 1; i <= hoja.getLastRowNum(); i++){
             
             fila = hoja.getRow(i);
             
@@ -195,7 +193,6 @@ public class excel {
         return true;
     } 
     
-    
     // HASHMAP
     
      public ArrayList<Categorias> hojaCategorias(){ //hoja 2
@@ -204,8 +201,6 @@ public class excel {
         
         Row fila;
         
-        //definir un HashMap
-        //HashMap<String, Float> categorias = new HashMap<String, Float>();
         ArrayList<Categorias> categorias = new ArrayList<>(hoja.getLastRowNum()-1);
         
         for(int i = 1; i <= hoja.getLastRowNum(); i++){
@@ -216,10 +211,6 @@ public class excel {
             		Double.parseDouble(fila.getCell(2).toString()));
             
             categorias.add(cat);
-        
-            //insertar valores "key"-"value" al HashMap
-            //categorias.put(fila.getCell(0).toString(), Float.parseFloat(fila.getCell(1).toString()));
-            //categorias.put(fila.getCell(0).toString(), Float.parseFloat(fila.getCell(2).toString()));
         } 
         
         for(Categorias cat: categorias) {
@@ -308,14 +299,15 @@ public class excel {
     
     //DÍGITOS DE CONTROL
     
-    public void corrigeDigitosDeControl(){
+    public ArrayList<ArrayList<String>> corrigeDigitosDeControl(){
         
         XSSFSheet hoja = excel.getSheetAt(0);
-        Iterator<Row> iteradorFilas = hoja.iterator();
         
         Row fila;
         
-        for(int i = 1; i < hoja.getLastRowNum(); i++){
+        ArrayList<ArrayList<String>> cccErroneos = new ArrayList<ArrayList<String>>();
+        
+        for(int i = 1; i <= hoja.getLastRowNum(); i++){
             
             fila = hoja.getRow(i);
             
@@ -326,11 +318,17 @@ public class excel {
                 String res = validaDigitosDeControl(celda.getStringCellValue());
                 
                 if(res != "inc" && res != null){ //modifica los dígitos de control erróneos
-                    
-                    //celda.setCellValue(res);
+                                    	
+                	cccErroneos.add(new ArrayList<>());
+                	cccErroneos.get(cccErroneos.size()-1).add(Integer.toString(i));
+                	cccErroneos.get(cccErroneos.size()-1).add(celda.getStringCellValue());
+                	
+                    celda.setCellValue(res);
                 }
             }
         }
+        
+        return cccErroneos;
     }
     
     private static String validaDigitosDeControl(String ccc){
@@ -392,11 +390,10 @@ public class excel {
     public void iban(){
         
         XSSFSheet hoja = excel.getSheetAt(0);
-        Iterator<Row> iteradorFilas = hoja.iterator();
         
         Row fila;
         
-        for(int i = 1; i < hoja.getLastRowNum(); i++){
+        for(int i = 1; i <= hoja.getLastRowNum(); i++){
             
             fila = hoja.getRow(i);
             
@@ -409,8 +406,11 @@ public class excel {
                     
                     String iban = calculaIban(celdaCCC.getStringCellValue(), celdaPais.getStringCellValue());
 
-                    //celdaIban.setCellValue(iban);
+                    if(celdaIban == null) {
+                    	celdaIban = fila.createCell(11);
+                    }
                     
+                    celdaIban.setCellValue(iban);                    
                 }
             }
         } 
@@ -443,7 +443,6 @@ public class excel {
         }
         
         String iban = pais.concat(digitos).concat(ccc);
-        System.out.println("IBAN: " + iban);
         
         return iban;
     }
@@ -540,13 +539,13 @@ public class excel {
     public void email(){
         
         XSSFSheet hoja = excel.getSheetAt(0);
-        Iterator<Row> iteradorFilas = hoja.iterator();
         
         Row fila;
         
-        ArrayList<String> usuarios = new ArrayList();
+        ArrayList<String> usuarios = new ArrayList<String>();
+        ArrayList<String> empresas = new ArrayList<String>();
         
-        for(int i = 1; i < hoja.getLastRowNum(); i++){
+        for(int i = 1; i <= hoja.getLastRowNum(); i++){
             
             fila = hoja.getRow(i);
             
@@ -559,17 +558,22 @@ public class excel {
             if(celdaA1 != null && celdaA1.getCellType() != CellType.BLANK && StringUtils.isNotBlank(celdaA1.toString()) && !filaVacia(fila)){
                 if(celdaN != null && celdaN.getCellType() != CellType.BLANK && StringUtils.isNotBlank(celdaN.toString()) && !filaVacia(fila)){
                     if(celdaE != null && celdaE.getCellType() != CellType.BLANK && StringUtils.isNotBlank(celdaE.toString()) && !filaVacia(fila)){
-                        if(celdaA2 != null && celdaA2.getCellType() != CellType.BLANK && StringUtils.isNotBlank(celdaA2.toString()) && !filaVacia(fila)){
+                        
+                    	String email;
+                    	
+                    	if(celdaA2 != null && celdaA2.getCellType() != CellType.BLANK && StringUtils.isNotBlank(celdaA2.toString()) && !filaVacia(fila)){
                             
-                            String email = generaEmail(celdaA1.getStringCellValue(), celdaA2.getStringCellValue(), celdaN.getStringCellValue(), celdaE.getStringCellValue(),usuarios);
-                            
-                            //celdaEmail.setCellValue(email);
-                            
+                            email = generaEmail(celdaA1.getStringCellValue(), celdaA2.getStringCellValue(), celdaN.getStringCellValue(), celdaE.getStringCellValue(),usuarios,empresas);
                         }
                         else{
-                            String email = generaEmail(celdaA1.getStringCellValue(),celdaN.getStringCellValue(),celdaE.getStringCellValue(),usuarios);
+                            email = generaEmail(celdaA1.getStringCellValue(),celdaN.getStringCellValue(),celdaE.getStringCellValue(),usuarios,empresas);
                             
-                            //celdaEmail.setCellValue(email);
+                        }
+                        
+                        if(celdaEmail == null) {
+                        	
+                        	celdaEmail = fila.createCell(8);
+                        	celdaEmail.setCellValue(email);
                         }
                     }
                 }  
@@ -577,7 +581,7 @@ public class excel {
         }
     }
     
-    public String generaEmail(String apellido1, String apellido2, String nombre, String empresa, ArrayList<String> usuarios){
+    public String generaEmail(String apellido1, String apellido2, String nombre, String empresa, ArrayList<String> usuarios, ArrayList<String> empresas){
         
         String[] surname1 = apellido1.split("");
         String[] name = nombre.split("");
@@ -595,42 +599,40 @@ public class excel {
             usuario = surname1[0].concat(name[0]);
         }
                 
-        String num = repeticion(usuarios, usuario);
+        String num = repeticion(usuarios, empresas, usuario, empresa);
         
         usuarios.add(usuario);
+        empresas.add(empresa);
         
         String email = usuario.concat(num).concat("@").concat(empresa).concat(".es");
-        System.out.println("email: " + email);
         
         return email;
     }
     
-    public String generaEmail(String apellido1, String nombre, String empresa, ArrayList<String> usuarios){
+    public String generaEmail(String apellido1, String nombre, String empresa, ArrayList<String> usuarios, ArrayList<String> empresas){
         
         String[] surname = apellido1.split("");
         String[] name = nombre.split("");
         
-        String usuario = null;
-        
-        usuario = surname[0].concat(name[0]);
+        String usuario = surname[0].concat(name[0]);
                 
-        String num = repeticion(usuarios, usuario);
+        String num = repeticion(usuarios, empresas, usuario, empresa);
         
         usuarios.add(usuario);
+        empresas.add(empresa);
         
         String email = usuario.concat(num).concat("@").concat(empresa).concat(".es");
-        System.out.println("email: " + email);
         
-        return null;
+        return email;
     }
     
-    public String repeticion(ArrayList<String> usuarios, String usuario){
+    public String repeticion(ArrayList<String> usuarios, ArrayList<String> empresas, String usuario, String empresa){
         
         int contador = 0;
         
         for(int i = 0; i < usuarios.size(); i++){
             
-            if(usuario.equals(usuarios.get(i))){
+            if(usuario.equals(usuarios.get(i)) && empresa.equals(empresas.get(i))){
                 
                 contador++;
             }
