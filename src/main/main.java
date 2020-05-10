@@ -20,7 +20,7 @@ public class main {
      */
     public static void main(String[] args) {    
         
-        excel exc = new excel();
+        /*excel exc = new excel();
         exc.corrigeNifs();
         ArrayList<ArrayList<String>> cuentasErrores = exc.corrigeDigitosDeControl();
         exc.iban();
@@ -29,7 +29,7 @@ public class main {
     
         xml xml = new xml();
         xml.creaFicheroErrores();
-        xml.creaFicheroErroresCCC(cuentasErrores);
+        xml.creaFicheroErroresCCC(cuentasErrores);*/
         
     }
     
